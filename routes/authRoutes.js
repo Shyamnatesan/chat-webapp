@@ -11,5 +11,4 @@ module.exports = (app) => {
   app.post("/auth/verifyToken", userVerification, verifyToken);
   app.post("/auth/login", Login);
   app.post("/", userVerification);
-  app.get("/api/search", userVerification, SearchUsers);
 };

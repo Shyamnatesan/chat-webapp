@@ -29,6 +29,7 @@ app.use(cookieParser());
 app.use(express.json());
 
 require("./routes/authRoutes")(app);
+require("./routes/friendRoutes")(app);
 
 app.listen(PORT, () => {
   console.log(`Server is listening on port ${PORT}`);

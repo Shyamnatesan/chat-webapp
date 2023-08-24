@@ -21,7 +21,7 @@ module.exports.Signup = async (req, res) => {
 };
 
 module.exports.verifyToken = (req, res) => {
-  res.json({ status: true, message: "Token verified" });
+  res.json({ status: true, message: "Token verified", user: req.user });
 };
 
 module.exports.Login = async (req, res) => {
@@ -49,29 +49,5 @@ module.exports.Login = async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(500).json({ status: false, message: "Internal server error" });
-  }
-};
-
-module.exports.SearchUsers = async (req, res) => {
-  const { q, page, perPage } = req.query;
-  const skip = (page - 1) * perPage;
-  const searchQuery = {
-    $or: [
-      { fullName: { $regex: q, $options: "i" } },
-      { phonenumber: { $regex: q, $options: "i" } },
-      { email: { $regex: q, $options: "i" } },
-    ],
-  };
-  try {
-    const [users, totalUsers] = await Promise.all([
-      User.find(searchQuery).skip(skip).limit(parseInt(perPage)),
-      User.countDocuments(searchQuery),
-    ]);
-    res.status(201).json({ users, totalUsers });
-  } catch (error) {
-    console.error("Error fetching search results:", error);
-    res
-      .status(500)
-      .json({ error: "An error occurred while fetching search results" });
   }
 };
