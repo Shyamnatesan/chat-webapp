@@ -134,7 +134,7 @@ module.exports.HandleFriendRequestAction = async (req, res) => {
     } else if (action === "DECLINE") {
       updatedFriendRequest = await Friendship.findOneAndUpdate(
         { requestSenderId, requestReceiverId, status: "pending" },
-        { $set: { status: "accepted" } },
+        { $set: { status: "declined" } },
         { $new: true }
       );
     } else {
