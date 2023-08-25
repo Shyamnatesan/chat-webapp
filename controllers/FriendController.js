@@ -1,5 +1,6 @@
 const Friendship = require("../models/Friendship");
 const User = require("../models/User");
+const { v4: uuidv4 } = require("uuid");
 
 module.exports.SendFriendRequest = async (req, res) => {
   try {
@@ -126,9 +127,10 @@ module.exports.HandleFriendRequestAction = async (req, res) => {
   try {
     let updatedFriendRequest;
     if (action === "ACCEPT") {
+      const roomId = uuidv4();
       updatedFriendRequest = await Friendship.findOneAndUpdate(
         { requestSenderId, requestReceiverId, status: "pending" },
-        { $set: { status: "accepted" } },
+        { $set: { status: "accepted", roomId } },
         { $new: true }
       );
     } else if (action === "DECLINE") {
@@ -157,5 +159,63 @@ module.exports.HandleFriendRequestAction = async (req, res) => {
     return res
       .status(500)
       .json({ status: false, error: "Error handling friend request" });
+  }
+};
+
+module.exports.GetFriends = async (req, res) => {
+  const userId = req.user._id.toString();
+  // this the current user's id
+  console.log(userId);
+  try {
+    const friends = await Friendship.find({
+      $and: [
+        { $or: [{ requestSenderId: userId }, { requestReceiverId: userId }] },
+        { status: "accepted" },
+      ],
+    });
+
+    const friendIds = friends.map((friend) => {
+      return friend.requestSenderId.toString() === userId
+        ? friend.requestReceiverId.toString()
+        : friend.requestSenderId.toString();
+    });
+
+    const friendsData = await User.find({ _id: { $in: friendIds } });
+
+    console.log(friendsData);
+    res.status(200).json({ status: true, data: friendsData });
+  } catch (error) {
+    console.error("Error fetching user friends:", error);
+    res.status(500).json({ error: "Error fetching user friends" });
+  }
+};
+
+module.exports.GetRoomId = async (req, res) => {
+  const userAId = req.user._id.toString();
+  const userBId = req.body.user._id.toString();
+  console.log(userAId, userBId);
+
+  try {
+    const friendship = await Friendship.find({
+      status: "accepted",
+      $or: [
+        {
+          requestSenderId: userAId,
+          requestReceiverId: userBId,
+        },
+        {
+          requestSenderId: userBId,
+          requestReceiverId: userAId,
+        },
+      ],
+    });
+
+    console.log(friendship[0]);
+    res.status(200).json({ status: true, roomId: friendship[0].roomId });
+  } catch (error) {
+    console.log(error);
+    res
+      .status(500)
+      .json({ status: false, error: "error occured while fetching roomId" });
   }
 };

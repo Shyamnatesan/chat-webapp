@@ -1,10 +1,11 @@
+// index.js
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const http = require("http");
+const socketSetup = require("./socket");
 const app = express();
 require("dotenv").config();
-const cookieParser = require("cookie-parser");
-const { userVerification } = require("./middlewares/authMiddleware");
 
 const { MONGO_URL, PORT } = process.env;
 
@@ -13,7 +14,7 @@ mongoose
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
-  .then(() => console.log("MongoDB is  connected successfully"))
+  .then(() => console.log("MongoDB is connected successfully"))
   .catch((err) => console.error(err));
 
 app.use(
@@ -24,13 +25,14 @@ app.use(
   })
 );
 
-app.use(cookieParser());
-
 app.use(express.json());
 
 require("./routes/authRoutes")(app);
 require("./routes/friendRoutes")(app);
 
-app.listen(PORT, () => {
+const server = http.createServer(app);
+socketSetup(server);
+
+server.listen(PORT, () => {
   console.log(`Server is listening on port ${PORT}`);
 });

@@ -16,6 +16,9 @@ const friendshipSchema = new mongoose.Schema({
     enum: ["pending", "accepted", "declined"],
     required: true,
   },
+  roomId: {
+    type: String,
+  },
 });
 
 const Friendship = mongoose.model("Friendship", friendshipSchema);
