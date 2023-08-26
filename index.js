@@ -29,7 +29,7 @@ app.use(express.json());
 
 require("./routes/authRoutes")(app);
 require("./routes/friendRoutes")(app);
-
+require("./routes/messageRoutes")(app);
 const server = http.createServer(app);
 const io = socketSetup(server);
 require("./controllers/ChatController")(io);

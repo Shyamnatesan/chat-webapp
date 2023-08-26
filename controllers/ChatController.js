@@ -14,9 +14,9 @@ module.exports = (io) => {
 
       const newMessage = new Messages({
         roomId: data.roomId, // Store the roomId
-        senderId: socket.id,
+        senderId: data.senderId,
         recipientId: data.recipientId,
-        content: data.message,
+        message: data.message,
       });
 
       try {
@@ -28,7 +28,7 @@ module.exports = (io) => {
 
       io.to(data.roomId).emit("newMessage", {
         message: data.message,
-        senderId: socket.id,
+        senderId: data.senderId,
       });
     });
 

@@ -4,7 +4,7 @@ const messageSchema = new mongoose.Schema({
   roomId: { type: String, required: true }, // Add the roomId field
   senderId: { type: String, required: true },
   recipientId: { type: String, required: true },
-  content: { type: String, required: true },
+  message: { type: String, required: true },
   timestamp: { type: Date, default: Date.now },
 });
 
