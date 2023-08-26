@@ -31,7 +31,8 @@ require("./routes/authRoutes")(app);
 require("./routes/friendRoutes")(app);
 
 const server = http.createServer(app);
-socketSetup(server);
+const io = socketSetup(server);
+require("./controllers/ChatController")(io);
 
 server.listen(PORT, () => {
   console.log(`Server is listening on port ${PORT}`);
