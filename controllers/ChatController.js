@@ -23,7 +23,7 @@ module.exports = (io) => {
         await newMessage.save();
         console.log("message successfully saved in the database");
       } catch (error) {
-        console.log("error occured while storing the message");
+        next(error);
       }
 
       io.to(data.roomId).emit("newMessage", {
