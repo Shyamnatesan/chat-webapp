@@ -6,6 +6,8 @@ const http = require("http");
 const socketSetup = require("./socket");
 const app = express();
 require("dotenv").config();
+const errorHandler = require("./middlewares/errorMiddleware");
+const errorMiddleware = require("./middlewares/errorMiddleware");
 
 const { MONGO_URL, PORT } = process.env;
 
@@ -33,6 +35,7 @@ require("./routes/messageRoutes")(app);
 const server = http.createServer(app);
 const io = socketSetup(server);
 require("./controllers/ChatController")(io);
+app.use(errorMiddleware);
 
 server.listen(PORT, () => {
   console.log(`Server is listening on port ${PORT}`);
